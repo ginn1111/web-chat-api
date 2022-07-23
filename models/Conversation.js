@@ -9,6 +9,7 @@ const ConversationSchema = new mongoose.Schema(
             },
         ],
         isGroup: { type: Boolean, default: false },
+        fromOnline: {type: Number, default: new Date().getTime()}
     },
     { timestamps: true },
 );
