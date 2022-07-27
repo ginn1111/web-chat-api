@@ -1,0 +1,10 @@
+{
+  "env": {
+    "ACCESS_TOKEN_SECRET": "c075b2bca9d384fa4b178dff676e4df8f5c7be5c7d2c2de2724254e7013d800ebebcf9c50d1d77fb038062dbc9f52252554aef05c327d2d130b06af72807d416",
+    "MONGO_URI": "mongodb+srv://teamwork2021:tntteam2021@teamwork.ysv8p.mongodb.net/chapApp?retryWrites=true&w=majority",
+    "PORT": "8080",
+    "PASS_SECURE": "tntTe@mPass",
+    "REFRESH_TOKEN_SECRET": "a1d04ed5d083930133705830cc8cbcea45995f4e56d234d7677492c2bf5649275a0d76f7cd53713ca104e31262128c3ff137d9b4ba6ef8a6af594a3b767bf803",
+    "ORIGIN": "[\"http://localhost:3000\", \"http://localhost:8900\"]"
+  }
+}

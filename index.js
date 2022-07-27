@@ -18,17 +18,17 @@ dotenv.config();
 
 // MongoDB connection
 mongoose
-    .connect(process.env.MONGO_URI, {
-        useNewUrlParser: true,
-    })
-    .then(() => {
-        console.log('DB connected!');
-    })
-    .catch((err) => {
-        console.log(err);
-    });
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+  })
+  .then(() => {
+    console.log('DB connected!');
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
-app.use(cors({ credentials: true, origin: process.env.ORIGIN }));
+app.use(cors({ credentials: true, origin: JSON.parse(process.env.ORIGIN) }));
 app.use(cookieParser());
 app.use(express.json());
 
@@ -40,5 +40,5 @@ app.use('/api/messages', messagesRoute);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
-    console.log(`Back-end server is running on port ${port}`);
+  console.log(`Back-end server is running on port ${port}`);
 });

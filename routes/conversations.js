@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const Conversation = require('../models/Conversation');
-const User = require('../models/User')
+const User = require('../models/User');
 
 const { verifyToken, verifyTokenAndAuthorization } = require('./verify');
 
@@ -37,11 +37,19 @@ router.get('/:id/get', verifyTokenAndAuthorization, async (req, res) => {
       conversations = await Conversation.find({
         'members.memberId': userId,
       });
-      conversations = await Promise.all(conversations.map(async conversation => {
-          const member = conversation.members.filter(mem => mem.memberId !== userId)[0]
-          const memberInfor = await User.findById( member.memberId)
-          return {...conversation._doc, title: `${memberInfor.firstName} ${memberInfor.lastName}`, avatar: memberInfor.avatar}
-        }))
+      conversations = await Promise.all(
+        conversations.map(async (conversation) => {
+          const member = conversation.members.filter(
+            (mem) => mem.memberId !== userId,
+          )[0];
+          const memberInfor = await User.findById(member.memberId);
+          return {
+            ...conversation._doc,
+            title: `${memberInfor.firstName} ${memberInfor.lastName}`,
+            avatar: memberInfor.avatar,
+          };
+        }),
+      );
     }
     res.status(200).json(conversations);
   } catch (error) {
@@ -92,10 +100,26 @@ router.put('/:conversationId/theme', verifyToken, async (req, res) => {
   }
 });
 
+//[UPDATE FROM TIME ONLINE]
+router.put(`/:conversationId/update-time`, verifyToken, async (req, res) => {
+  try {
+    await Conversation.findByIdAndUpdate(req.params.conversationId, {
+      $set: req.body,
+    });
+    console.log('update');
+    res.status(200).json('Success');
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
 // [DELETE CONVERSATION]
 router.delete('/:conversationId/delete', verifyToken, async (req, res) => {
   try {
-    const deletedConversation = await Conversation.findByIdAndDelete(req.params.conversationId);
+    const deletedConversation = await Conversation.findByIdAndDelete(
+      req.params.conversationId,
+    );
     res.status(200).json(deletedConversation);
   } catch (error) {
     res.status(500).json(error);

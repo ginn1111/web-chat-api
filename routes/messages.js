@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const Message = require('../models/Message');
 
-const { verifyToken, verifyTokenAndAuthorization } = require('./verify');
+const { verifyTokenAndAuthorization } = require('./verify');
 
 // [POST/SEND NEW MESSAGE]
 router.post('/:id/create', verifyTokenAndAuthorization, async (req, res) => {
