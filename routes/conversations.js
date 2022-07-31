@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const Conversation = require('../models/Conversation');
 const User = require('../models/User');
+const Message = require('../models/Message');
 
 const { verifyToken, verifyTokenAndAuthorization } = require('./verify');
 
@@ -43,10 +44,20 @@ router.get('/:id/get', verifyTokenAndAuthorization, async (req, res) => {
             (mem) => mem.memberId !== userId,
           )[0];
           const memberInfor = await User.findById(member.memberId);
+          const lastMsg = await Message.find({
+            conversationId: conversation._id,
+          })
+            .sort({ _id: -1 })
+            .limit(1);
           return {
             ...conversation._doc,
             title: `${memberInfor.firstName} ${memberInfor.lastName}`,
             avatar: memberInfor.avatar,
+            lastMsg: lastMsg[0] ?? {
+              text: "Let's chat!",
+              senderId: null,
+              createdAt: null,
+            },
           };
         }),
       );
