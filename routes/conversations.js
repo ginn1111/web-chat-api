@@ -1,7 +1,10 @@
 const router = require('express').Router();
 const Conversation = require('../models/Conversation');
-const User = require('../models/User');
-const Message = require('../models/Message');
+const {
+  getAvatarMemberConversationList,
+  getLastMsgAndInforForPrivateConversation,
+  getAvatarMemberForGroupConversation,
+} = require('../utils/helper');
 
 const { verifyToken, verifyTokenAndAuthorization } = require('./verify');
 
@@ -13,10 +16,16 @@ router.post('/:id/create', verifyTokenAndAuthorization, async (req, res) => {
   const newConversation = new Conversation({
     members: [...req.body.members],
     isGroup: JSON.parse(qCreateGroup),
+    title: req.body.title ?? "Don't have name!",
   });
   try {
     // Save new conversation to db
-    const savedConversation = await newConversation.save();
+    let savedConversation = await newConversation.save();
+    savedConversation = {
+      ...savedConversation._doc,
+      members: req.body.members,
+      fromOnline: Date.now()
+    };
     res.status(200).json(savedConversation);
   } catch (error) {
     res.status(500).json(error);
@@ -25,41 +34,27 @@ router.post('/:id/create', verifyTokenAndAuthorization, async (req, res) => {
 
 // [GET ALL CONVERSATIONS]
 router.get('/:id/get', verifyTokenAndAuthorization, async (req, res) => {
-  const qIsGroup = req.query.isGroup;
+  const qIsGroup = JSON.parse(req.query.isGroup);
   const userId = req.params.id;
   try {
     let conversations;
     if (qIsGroup) {
       conversations = await Conversation.find({
         'members.memberId': userId,
-        isGroup: JSON.parse(qIsGroup),
+        isGroup: true,
       });
+
+      conversations = await getAvatarMemberConversationList(
+        conversations,
+      );
     } else {
       conversations = await Conversation.find({
         'members.memberId': userId,
+        isGroup: false,
       });
-      conversations = await Promise.all(
-        conversations.map(async (conversation) => {
-          const member = conversation.members.filter(
-            (mem) => mem.memberId !== userId,
-          )[0];
-          const memberInfor = await User.findById(member.memberId);
-          const lastMsg = await Message.find({
-            conversationId: conversation._id,
-          })
-            .sort({ _id: -1 })
-            .limit(1);
-          return {
-            ...conversation._doc,
-            title: `${memberInfor.firstName} ${memberInfor.lastName}`,
-            avatar: memberInfor.avatar,
-            lastMsg: lastMsg[0] ?? {
-              text: "Let's chat!",
-              senderId: null,
-              createdAt: null,
-            },
-          };
-        }),
+      conversations = await getLastMsgAndInforForPrivateConversation(
+        conversations,
+        userId,
       );
     }
     res.status(200).json(conversations);
@@ -75,22 +70,26 @@ router.put('/:conversationId/add-member/', verifyToken, async (req, res) => {
     const conversation = await Conversation.findById(req.params.conversationId);
     // Flag to check if the added user is already in this group
     const isAlreadyInGroup = conversation.members.some(
-      (member) => member.memberId === req.body.newMember.memberId,
+      (member) => member.memberId === req.body.newMembers.memberId,
     );
     // If yes, send error
     if (isAlreadyInGroup) {
       return res.status(409).json('This user has already been in this group!');
     }
     // Otherwise add user to this group
-    const updatedConversation = await Conversation.findByIdAndUpdate(
+    let updatedConversation = await Conversation.findByIdAndUpdate(
       req.params.conversationId,
       {
-        $push: { members: req.body.newMember },
+        $push: { members: req.body.newMembers },
       },
       { new: true },
     );
+    updatedConversation = await getAvatarMemberForGroupConversation(
+      updatedConversation,
+    );
     res.status(200).json(updatedConversation);
   } catch (error) {
+    console.log(error);
     res.status(500).json(error);
   }
 });
@@ -131,7 +130,7 @@ router.delete('/:conversationId/delete', verifyToken, async (req, res) => {
     const deletedConversation = await Conversation.findByIdAndDelete(
       req.params.conversationId,
     );
-    res.status(200).json(deletedConversation);
+    res.status(200).json(deletedConversation._id);
   } catch (error) {
     res.status(500).json(error);
   }

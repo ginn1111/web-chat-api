@@ -10,6 +10,7 @@ const UserSchema = new mongoose.Schema(
     birthday: { type: Date, default: new Date() },
     biography: { type: String, default: 'Not updated yet...' },
     avatar: { type: String, default: '' },
+    address: { type: String, default: '' },
     coverPicture: { type: String, default: '' },
     friendList: { type: Array, default: [] },
     friendRequest: { type: Array, default: [] },

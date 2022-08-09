@@ -9,8 +9,13 @@ const ConversationSchema = new mongoose.Schema(
       },
     ],
     isGroup: { type: Boolean, default: false },
-    fromOnline: { type: Number, default: new Date().getTime() },
-    lastMsg: { type: String, default: "Let's chat!" },
+    title: { type: String, default: "Don't have name!" },
+    fromOnline: { type: Number, default: Date.now() },
+    lastMsg: {
+      text: { type: String, default: "Let's chat!" },
+      senderId: {type: String, default: null},
+      createdAt: {type: String, default: null},
+    },
   },
   { timestamps: true },
 );
