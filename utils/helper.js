@@ -1,5 +1,5 @@
-const User = require('../models/User');
-const Message = require('../models/Message');
+const User = require("../models/User");
+const Message = require("../models/Message");
 
 const getLastMsg = async (conversationId) =>
   await Message.find({
@@ -13,7 +13,7 @@ const getAvatarMemberForGroupConversation = async (conversation) => {
     conversation?.members?.map(async (mem) => {
       const avatar = (await User.findById(mem.memberId)).avatar;
       return { ...mem._doc, avatar };
-    }),
+    })
   );
   const lastMsg = await getLastMsg(conversation._id);
   return {
@@ -35,12 +35,12 @@ const getAvatarMemberConversationList = async (conversations) => {
       return {
         ...conWithNewMembersAndLastMsg,
       };
-    }),
+    })
   );
 };
 const getLastMsgAndInforForPrivateConversation = async (
   conversations,
-  userId,
+  userId
 ) => {
   return await Promise.all(
     conversations.map(async (conversation) => {
@@ -48,7 +48,7 @@ const getLastMsgAndInforForPrivateConversation = async (
         await getAvatarMemberForGroupConversation(conversation);
 
       const member = conWithNewMembersAndLastMsg.members.find(
-        (mem) => mem.memberId !== userId,
+        (mem) => mem.memberId !== userId
       );
 
       return {
@@ -56,7 +56,7 @@ const getLastMsgAndInforForPrivateConversation = async (
         title: member.nickname,
         avatar: member.avatar,
       };
-    }),
+    })
   );
 };
 
