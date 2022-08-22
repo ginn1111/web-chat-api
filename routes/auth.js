@@ -159,7 +159,7 @@ router.post("/refresh-token", async (req, res) => {
         res.cookie("refreshToken", newRefreshToken, {
           path: "/",
           httpOnly: true,
-          secure: false,
+          secure: true,
           sameSite: "strict",
         });
         res.status(200).json({ accessToken: newAccessToken });
