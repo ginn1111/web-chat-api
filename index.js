@@ -42,7 +42,7 @@ app.use("/api/notifications", notificationRoute);
 app.use("/api/conversations", conversationRoute);
 app.use("/api/messages", messagesRoute);
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`Back-end server is running on port ${port}`);
 });
