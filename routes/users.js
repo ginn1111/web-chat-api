@@ -1,12 +1,12 @@
-const { verifyToken, verifyTokenAndAuthorization } = require('./verify');
+const { verifyToken, verifyTokenAndAuthorization } = require("./verify");
 
-const router = require('express').Router();
-const User = require('../models/User');
-const CryptoJS = require('crypto-js');
-const { getURLAvatar, getURLCoverPicture } = require('../services/firebase');
+const router = require("express").Router();
+const User = require("../models/User");
+const CryptoJS = require("crypto-js");
+const { getURLAvatar, getURLCoverPicture } = require("../services/firebase");
 
 // [GET 1 USER]
-router.get('/find/:userId', verifyToken, async (req, res) => {
+router.get("/find/:userId", verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     const { password, updatedAt, ...others } = user._doc;
@@ -17,7 +17,7 @@ router.get('/find/:userId', verifyToken, async (req, res) => {
 });
 
 // [GET ALL USERS]
-router.get('/', verifyToken, async (req, res) => {
+router.get("/", verifyToken, async (req, res) => {
   const qName = req.query.name;
   try {
     let responseUsers = [];
@@ -28,8 +28,8 @@ router.get('/', verifyToken, async (req, res) => {
       // (finding all relevant result even upper case or lower case characters
       const users = await User.find({
         $or: [
-          { firstName: { $regex: qName, $options: 'gi' } },
-          { lastName: { $regex: qName, $options: 'gi' } },
+          { firstName: { $regex: qName, $options: "gi" } },
+          { lastName: { $regex: qName, $options: "gi" } },
         ],
       });
       // Set users list get from db for the response data
@@ -47,7 +47,7 @@ router.get('/', verifyToken, async (req, res) => {
 });
 
 // [GET ALL FRIENDS OF USER]
-router.get('/:id/friends', verifyToken, async (req, res) => {
+router.get("/:id/friends", verifyToken, async (req, res) => {
   try {
     // Firstly, get own user
     const authUser = await User.findById(req.params.id);
@@ -56,7 +56,7 @@ router.get('/:id/friends', verifyToken, async (req, res) => {
       authUser.friendList.map((friendId) => {
         // Return the relevant user with every id in friends list
         return User.findById(friendId);
-      }),
+      })
     );
     // Take all needed information
     const friendList = friends.map((friend) => {
@@ -71,7 +71,7 @@ router.get('/:id/friends', verifyToken, async (req, res) => {
 
 // [UPDATE AVATAR]
 router.put(`/:id/avatar`, verifyTokenAndAuthorization, async (req, res) => {
-  const usrId = req.params.id
+  const usrId = req.params.id;
   const avatarURL = await getURLAvatar(usrId);
   try {
     await User.findByIdAndUpdate(
@@ -79,7 +79,7 @@ router.put(`/:id/avatar`, verifyTokenAndAuthorization, async (req, res) => {
       {
         $set: { avatar: avatarURL },
       },
-      { new: true },
+      { new: true }
     );
     res.status(200).json(avatarURL);
   } catch (error) {
@@ -88,30 +88,34 @@ router.put(`/:id/avatar`, verifyTokenAndAuthorization, async (req, res) => {
 });
 
 // [UPDATE COVER PICTURE]
-router.put(`/:id/cover-picture`, verifyTokenAndAuthorization, async (req, res) => {
-  const usrId = req.params.id
-  const coverPictureURL = await getURLCoverPicture(usrId);
-  try {
-    await User.findByIdAndUpdate(
-      usrId,
-      {
-        $set: { coverPicture: coverPictureURL },
-      },
-      { new: true },
-    );
-    res.status(200).json(coverPictureURL);
-  } catch (error) {
-    res.status(500).json(error);
+router.put(
+  `/:id/cover-picture`,
+  verifyTokenAndAuthorization,
+  async (req, res) => {
+    const usrId = req.params.id;
+    const coverPictureURL = await getURLCoverPicture(usrId);
+    try {
+      await User.findByIdAndUpdate(
+        usrId,
+        {
+          $set: { coverPicture: coverPictureURL },
+        },
+        { new: true }
+      );
+      res.status(200).json(coverPictureURL);
+    } catch (error) {
+      res.status(500).json(error);
+    }
   }
-});
+);
 
 // [UPDATE USER]
-router.put('/:id/edit', verifyTokenAndAuthorization, async (req, res) => {
+router.put("/:id/edit", verifyTokenAndAuthorization, async (req, res) => {
   // Take the password and hash it if the user changes
   if (req.body.password) {
     req.body.password = CryptoJS.AES.encrypt(
       req.body.password,
-      process.env.PASS_SECURE,
+      process.env.PASS_SECURE
     ).toString();
   }
   try {
@@ -122,13 +126,13 @@ router.put('/:id/edit', verifyTokenAndAuthorization, async (req, res) => {
       // Decrypt password from db (1)
       const hashedPassword = CryptoJS.AES.decrypt(
         currentUser.password,
-        process.env.PASS_SECURE,
+        process.env.PASS_SECURE
       );
       // Turn (1) to blank text password
       const originalPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
       // Check if the confirm password is correct
       if (req.body.currentPassword !== originalPassword) {
-        return res.status(401).json('Authenticated failed!');
+        return res.status(401).json("Authenticated failed!");
       }
     }
     // Set all request information in the body for the updated user
@@ -137,12 +141,12 @@ router.put('/:id/edit', verifyTokenAndAuthorization, async (req, res) => {
       {
         $set: req.body,
       },
-      { new: true },
+      { new: true }
     );
     const { password, updatedAt, ...others } = updatedUser._doc;
     res.status(200).json({
       ...others,
-      accessToken: req.headers['x-authorization'].split(' ')[1],
+      accessToken: req.headers["x-authorization"].split(" ")[1],
     });
   } catch (error) {
     res.status(500).json(error);
@@ -151,7 +155,7 @@ router.put('/:id/edit', verifyTokenAndAuthorization, async (req, res) => {
 
 // [SEND ADD FRIEND REQUEST]
 router.put(
-  '/:id/friends/add',
+  "/:id/friends/add",
   verifyTokenAndAuthorization,
   async (req, res) => {
     // Take friend id who the auth user sends
@@ -176,7 +180,7 @@ router.put(
           sender.friendList.includes(qReceiverId)
         ) {
           // If both are already friends, send error
-          return res.status(400).json('Requested failed!');
+          return res.status(400).json("Requested failed!");
         }
         // If not, add receiver id to friendRequest of auth user
         const updateSenderProcess = sender.updateOne({
@@ -188,22 +192,20 @@ router.put(
         });
         await updateSenderProcess;
         await updateReceiverProcess;
-        res.status(200).json('Request sent successfully!');
+        res.status(200).json("Request sent successfully!");
       } catch (error) {
         res.status(500).json(error);
       }
     } else {
       // otherwise, send error
-      return res
-        .status(403)
-        .json('You cannot add yourself to friend list!');
+      return res.status(403).json("You cannot add yourself to friend list!");
     }
-  },
+  }
 );
 
 // [RESPONSE TO ADD FRIEND REQUEST]
 router.put(
-  '/:id/friends/response',
+  "/:id/friends/response",
   verifyTokenAndAuthorization,
   async (req, res) => {
     // Take receiver id and response (accepted = 'true'/'false')
@@ -225,7 +227,7 @@ router.put(
 
         switch (qIsAccepted) {
           // In the case add friend request is accepted
-          case 'true': {
+          case "true": {
             // Delete receiver id from friendResponse
             // and add it to friendList of the auth user
             const updateSenderProcess = sender.updateOne({
@@ -244,7 +246,7 @@ router.put(
             break;
           }
           // In the case add friend request is denied
-          case 'false': {
+          case "false": {
             // Delete receiver id from friendResponse of auth user
             const updateSenderProcess = sender.updateOne({
               $pull: { friendResponse: qReceiverId },
@@ -255,11 +257,11 @@ router.put(
             });
             await updateSenderProcess;
             await updateReceiverProcess;
-            res.status(200).json('Request denied');
+            res.status(200).json("Request denied");
             break;
           }
           default:
-            res.status(400).json('Bad Request!');
+            res.status(400).json("Bad Request!");
             break;
         }
       } catch (error) {
@@ -267,16 +269,14 @@ router.put(
       }
     } else {
       // Else send error
-      return res
-        .status(403)
-        .json('You cannot do add or remove yourself!');
+      return res.status(403).json("You cannot do add or remove yourself!");
     }
-  },
+  }
 );
 
 // [UNFRIEND]
 router.put(
-  '/:id/friends/unfriend',
+  "/:id/friends/unfriend",
   verifyTokenAndAuthorization,
   async (req, res) => {
     // Take receiver id from request
@@ -308,27 +308,25 @@ router.put(
 
           await updateSenderProcess;
           await updateReceiverProcess;
-          res.status(200).json('Unfriend successfully!');
+          res.status(200).json("Unfriend successfully!");
         } else {
-          return res
-            .status(403)
-            .json('You are not friends to unfriend!');
+          return res.status(403).json("You are not friends to unfriend!");
         }
       } catch (error) {
         res.status(500).json(error);
       }
     } else {
       // Else send error
-      return res.status(403).json('You cannot unfriend yourself!');
+      return res.status(403).json("You cannot unfriend yourself!");
     }
-  },
+  }
 );
 
 // [DELETE USER]
-router.delete('/:id/delete', verifyTokenAndAuthorization, async (req, res) => {
+router.delete("/:id/delete", verifyTokenAndAuthorization, async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
-    res.status(200).json('Deleted successfully!');
+    res.status(200).json("Deleted successfully!");
   } catch (error) {
     res.status(500).json(error);
   }

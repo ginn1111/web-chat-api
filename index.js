@@ -32,6 +32,10 @@ app.use(cors({ credentials: true, origin: JSON.parse(process.env.ORIGIN) }));
 app.use(cookieParser());
 app.use(express.json());
 
+app.get("/", (_, res) => {
+  return res.json("Test");
+});
+
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/notifications", notificationRoute);

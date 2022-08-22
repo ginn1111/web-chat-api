@@ -5,6 +5,15 @@
     "PORT": "8080",
     "PASS_SECURE": "tntTe@mPass",
     "REFRESH_TOKEN_SECRET": "a1d04ed5d083930133705830cc8cbcea45995f4e56d234d7677492c2bf5649275a0d76f7cd53713ca104e31262128c3ff137d9b4ba6ef8a6af594a3b767bf803",
-    "ORIGIN": "[\"http://localhost:3000\", \"http://localhost:8900\"]"
+    "ORIGIN": "[\"http://localhost:3000\", \"http://localhost:8900\"]",
+    "REACT_APP_BASE_URL": "http://localhost:8080/api",
+    "REACT_APP_SOCKET_URL": "http://localhost:8900",
+    "REACT_APP_USER_KEY": "e94ca8ce28e785cd",
+    "REACT_APP_FIREBASE_API_KEY": "AIzaSyCbkMeTzrGKTvXsapoozv4w1nFZ3NO4igE",
+    "REACT_APP_FIREBASE_AUTH_DOMAIN": "chat-app-99a7d.firebaseapp.com",
+    "REACT_APP_FIREBASE_PROJECT_ID": "chat-app-99a7d",
+    "REACT_APP_FIREBASE_STORAGE_BUCKET": "chat-app-99a7d.appspot.com",
+    "REACT_APP_FIREBASE_MESSAGING_SENDER_ID": "546425543691",
+    "REACT_APP_FIREBASE_APP_ID": "1:546425543691:web:48cbf17703681b2ae57b0e"
   }
 }
