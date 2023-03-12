@@ -1,0 +1,18 @@
+{
+  "env": {
+    "ACCESS_TOKEN_SECRET": "c075b2bca9d384fa4b178dff676e4df8f5c7be5c7d2c2de2724254e7013d800ebebcf9c50d1d77fb038062dbc9f52252554aef05c327d2d130b06af72807d416",
+    "MONGO_URI": "mongodb+srv://mongo_user:0QK5wYhXIUVAw2aG@teamwork.ysv8p.mongodb.net/chapApp?retryWrites=true&w=majority",
+    "PASS_SECURE": "tntTe@mPass",
+    "REFRESH_TOKEN_SECRET": "a1d04ed5d083930133705830cc8cbcea45995f4e56d234d7677492c2bf5649275a0d76f7cd53713ca104e31262128c3ff137d9b4ba6ef8a6af594a3b767bf803",
+    "ORIGIN": "[\"http://localhost:3000\", \"http://localhost:8900\", \"https://tnt-team-web-chat.vercel.app\", \"https://tnt-team-web-chat-socket.herokuapp.com/\"]",
+    "REACT_APP_BASE_URL": "http://localhost:8080/api",
+    "REACT_APP_SOCKET_URL": "http://localhost:8900",
+    "REACT_APP_USER_KEY": "e94ca8ce28e785cd",
+    "REACT_APP_FIREBASE_API_KEY": "AIzaSyCbkMeTzrGKTvXsapoozv4w1nFZ3NO4igE",
+    "REACT_APP_FIREBASE_AUTH_DOMAIN": "chat-app-99a7d.firebaseapp.com",
+    "REACT_APP_FIREBASE_PROJECT_ID": "chat-app-99a7d",
+    "REACT_APP_FIREBASE_STORAGE_BUCKET": "chat-app-99a7d.appspot.com",
+    "REACT_APP_FIREBASE_MESSAGING_SENDER_ID": "546425543691",
+    "REACT_APP_FIREBASE_APP_ID": "1:546425543691:web:48cbf17703681b2ae57b0e"
+  }
+}
