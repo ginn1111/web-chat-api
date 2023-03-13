@@ -28,7 +28,7 @@ mongoose
     console.log(err);
   });
 
-app.use(cors({ credentials: true, origin: '*' }));
+app.use(cors({ credentials: true }));
 app.use(cookieParser());
 app.use(express.json());
 
