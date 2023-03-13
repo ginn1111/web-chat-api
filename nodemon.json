@@ -4,7 +4,7 @@
     "MONGO_URI": "mongodb+srv://mongo_user:0QK5wYhXIUVAw2aG@teamwork.ysv8p.mongodb.net/chapApp?retryWrites=true&w=majority",
     "PASS_SECURE": "tntTe@mPass",
     "REFRESH_TOKEN_SECRET": "a1d04ed5d083930133705830cc8cbcea45995f4e56d234d7677492c2bf5649275a0d76f7cd53713ca104e31262128c3ff137d9b4ba6ef8a6af594a3b767bf803",
-    "ORIGIN": "[\"http://localhost:3000\", \"http://localhost:8900\", \"https://tnt-team-web-chat.vercel.app\", \"https://tnt-team-web-chat-socket.herokuapp.com/\"]",
+    "ORIGIN": "[\"http://localhost:3000\", \"http://localhost:8900\", \"https://tnt-team-web-chat.vercel.app\", \"https://chat-socket-h6px.onrender.com\"]",
     "REACT_APP_BASE_URL": "http://localhost:8080/api",
     "REACT_APP_SOCKET_URL": "http://localhost:8900",
     "REACT_APP_USER_KEY": "e94ca8ce28e785cd",
