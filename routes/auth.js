@@ -43,7 +43,7 @@ router.post('/register', async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (user) {
-      return res.status(500).json('Email has already in used!');
+      return res.status(409).json('Email has already in used!');
     }
 
     await uploadDefaultAvatar(newUser._id);
