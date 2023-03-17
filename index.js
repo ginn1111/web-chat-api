@@ -28,13 +28,7 @@ mongoose
     console.log(err);
   });
 
-const origins = [
-  'http://localhost:3001',
-  'http://localhost:8900',
-  'https://tnt-team-web-chat.vercel.app',
-  'https://chat-socket-h6px.onrender.com',
-];
-app.use(cors({ credentials: true, origin: origins }));
+app.use(cors({ credentials: true, origin: JSON.parse(process.env.ORIGIN) }));
 app.use(cookieParser());
 app.use(express.json());
 
