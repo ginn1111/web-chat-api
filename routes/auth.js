@@ -99,7 +99,7 @@ router.post('/login', async (req, res) => {
       path: '/',
       httpOnly: true,
       secure: false,
-      sameSite: 'strict',
+      sameSite: 'none',
     });
 
     // Take all information of user but the password
@@ -159,8 +159,8 @@ router.post('/refresh-token', async (req, res) => {
         res.cookie('refreshToken', newRefreshToken, {
           path: '/',
           httpOnly: true,
-          secure: true,
-          sameSite: 'strict',
+          secure: false,
+          sameSite: 'none',
         });
         res.status(200).json({ accessToken: newAccessToken });
       }
