@@ -23,14 +23,18 @@ router.get('/search', verifyToken, async (req, res) => {
   const { offset = 0, limit = 10 } = req.query;
   try {
     const users = await User.find({
-      $and: {
-        $ne: userId,
-        $or: [
-          { nickname: { $regex: name, $options: 'gi' } },
-          { firstName: { $regex: name, $options: 'gi' } },
-          { lastName: { $regex: name, $options: 'gi' } },
-        ],
-      },
+      $and: [
+        {
+          _id: { $ne: userId },
+        },
+        {
+          $or: [
+            { nickname: { $regex: name, $options: 'gi' } },
+            { firstName: { $regex: name, $options: 'gi' } },
+            { lastName: { $regex: name, $options: 'gi' } },
+          ],
+        },
+      ],
     })
       .skip(offset)
       .limit(limit);
