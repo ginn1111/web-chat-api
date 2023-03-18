@@ -42,6 +42,8 @@ router.get('/search/:userId', verifyToken, async (req, res) => {
 // [GET ALL USERS]
 router.get('/', verifyToken, async (req, res) => {
   const qName = req.query.name;
+  const offset = req.query?.offset ?? 0;
+  const limit = req.query?.limit ?? 10;
   try {
     let responseUsers = [];
     // Check if request name query exists
@@ -51,14 +53,16 @@ router.get('/', verifyToken, async (req, res) => {
       // (finding all relevant result even upper case or lower case characters
       const users = await User.find({
         $or: [
+          { nickname: { $regex: qName, $options: 'gi' } },
           { firstName: { $regex: qName, $options: 'gi' } },
           { lastName: { $regex: qName, $options: 'gi' } },
         ],
-      });
+      }).skip(offset).limit(limit);
       // Set users list get from db for the response data
       responseUsers = users.map((user) => {
-        const { password, updatedAt, ...others } = user._doc;
-        return others;
+        const { password, updatedAt, _id, __v, createAt, ...others } =
+          user._doc;
+        return { ...others, id: _id };
       });
     }
     // Send the result if qName exists,
