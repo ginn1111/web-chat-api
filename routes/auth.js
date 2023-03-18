@@ -34,11 +34,7 @@ router.post('/register', async (req, res) => {
       req.body.password,
       process.env.PASS_SECURE
     ).toString(),
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    gender: req.body.gender,
-    birthday: req.body.birthday,
-    phone: req.body.phone,
+    nickname: req.body.nickname,
   });
   try {
     const user = await User.findOne({ email: req.body.email });

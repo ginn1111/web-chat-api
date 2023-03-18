@@ -17,14 +17,23 @@ router.get('/find/:userId', verifyToken, async (req, res) => {
 });
 
 // [GET USERS WITH NICKNAME]
-router.get('find/:userId', verifyToken, async (req, res) => {
+router.get('/search/:userId', verifyToken, async (req, res) => {
   let nickname = req.body.nickname;
-  nickname = nickname.trim();
+  nickname = nickname?.trim();
   if (!nickname) {
     res.status(422).json('Bad data!');
   }
   try {
     const userList = await User.find({ nickname });
+    const response = userList.map((user) => {
+      return {
+        nickname: user.nickname,
+        id: user._id,
+        avatar: user.avatar,
+        biography: user.biography,
+      };
+    });
+    res.status(200).json(response);
   } catch (error) {
     res.status(500).json(error);
   }
