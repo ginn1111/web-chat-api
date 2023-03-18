@@ -16,15 +16,25 @@ router.get('/find/:userId', verifyToken, async (req, res) => {
   }
 });
 
-// [GET USERS WITH NICKNAME]
-router.get('/search/:userId', verifyToken, async (req, res) => {
-  let nickname = req.body.nickname;
-  nickname = nickname?.trim();
-  if (!nickname) {
-    res.status(422).json('Bad data!');
-  }
+// [GET USERS WITH NAME]
+router.get('/search', verifyToken, async (req, res) => {
+  const name = req.body.name?.trim();
+  const userId = req.user.id;
+  const { offset = 0, limit = 10 } = req.query;
   try {
-    const userList = await User.find({ nickname });
+    const users = await User.find({
+      $and: {
+        $ne: userId,
+        $or: [
+          { nickname: { $regex: name, $options: 'gi' } },
+          { firstName: { $regex: name, $options: 'gi' } },
+          { lastName: { $regex: name, $options: 'gi' } },
+        ],
+      },
+    })
+      .skip(offset)
+      .limit(limit);
+
     const response = userList.map((user) => {
       return {
         nickname: user.nickname,
@@ -57,7 +67,9 @@ router.get('/', verifyToken, async (req, res) => {
           { firstName: { $regex: qName, $options: 'gi' } },
           { lastName: { $regex: qName, $options: 'gi' } },
         ],
-      }).skip(offset).limit(limit);
+      })
+        .skip(offset)
+        .limit(limit);
       // Set users list get from db for the response data
       responseUsers = users.map((user) => {
         const { password, updatedAt, _id, __v, createAt, ...others } =
