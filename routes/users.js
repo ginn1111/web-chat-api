@@ -16,6 +16,20 @@ router.get('/find/:userId', verifyToken, async (req, res) => {
   }
 });
 
+// [GET USERS WITH NICKNAME]
+router.get('find/:userId', verifyToken, async (req, res) => {
+  let nickname = req.body.nickname;
+  nickname = nickname.trim();
+  if (!nickname) {
+    res.status(422).json('Bad data!');
+  }
+  try {
+    const userList = await User.find({ nickname });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
 // [GET ALL USERS]
 router.get('/', verifyToken, async (req, res) => {
   const qName = req.query.name;
