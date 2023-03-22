@@ -285,7 +285,7 @@ router.put(
             });
             await updateSenderProcess;
             await updateReceiverProcess;
-            res.status(202).json({ accepted: true, receiver });
+            res.status(202).json(receiver._id);
             break;
           }
           // In the case add friend request is denied
