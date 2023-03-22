@@ -235,7 +235,7 @@ router.put(
         });
         await updateSenderProcess;
         await updateReceiverProcess;
-        res.status(200).json(receiver);
+        res.status(200).json(receiver._id);
       } catch (error) {
         res.status(500).json(error);
       }
@@ -300,7 +300,7 @@ router.put(
             });
             await updateSenderProcess;
             await updateReceiverProcess;
-            res.status(200).json({ accepted: false, receiver });
+            res.status(200).json(receiver._id);
             break;
           }
           default:
@@ -351,7 +351,7 @@ router.put(
 
           await updateSenderProcess;
           await updateReceiverProcess;
-          res.status(200).json(receiver);
+          res.status(200).json(receiver._id);
         } else {
           return res.status(403).json('You are not friends to unfriend!');
         }
