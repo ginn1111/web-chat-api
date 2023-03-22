@@ -235,7 +235,7 @@ router.put(
         });
         await updateSenderProcess;
         await updateReceiverProcess;
-        res.status(200).json('Request sent successfully!');
+        res.status(200).json(receiver);
       } catch (error) {
         res.status(500).json(error);
       }
@@ -285,7 +285,7 @@ router.put(
             });
             await updateSenderProcess;
             await updateReceiverProcess;
-            res.status(202).json(receiver);
+            res.status(202).json({ accepted: true, receiver });
             break;
           }
           // In the case add friend request is denied
@@ -300,7 +300,7 @@ router.put(
             });
             await updateSenderProcess;
             await updateReceiverProcess;
-            res.status(200).json('Request denied');
+            res.status(200).json({ accepted: false, receiver });
             break;
           }
           default:
@@ -351,7 +351,7 @@ router.put(
 
           await updateSenderProcess;
           await updateReceiverProcess;
-          res.status(200).json('Unfriend successfully!');
+          res.status(200).json(receiver);
         } else {
           return res.status(403).json('You are not friends to unfriend!');
         }
