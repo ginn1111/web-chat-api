@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Message = require('../models/Message');
+const Conversation = require('../models/Conversation');
 
 const getLastMsg = async (conversationId) =>
   await Message.find({
@@ -60,8 +61,21 @@ const getLastMsgAndInforForPrivateConversation = async (
   );
 };
 
+const deleteConversationByMembers = async (memberIds) => {
+  memberIds = memberIds.map((memberId) => ({ $elemMatch: { memberId } }));
+  const deletedConversation = await Conversation.deleteMany({
+    members: {
+      $all: memberIds,
+      $size: 2,
+    },
+  });
+
+  return deletedConversation;
+};
+
 module.exports = {
   getLastMsgAndInforForPrivateConversation,
   getAvatarMemberConversationList,
   getAvatarMemberForGroupConversation,
+  deleteConversationByMembers,
 };

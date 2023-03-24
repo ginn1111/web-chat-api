@@ -14,7 +14,7 @@ const {
 // <-- Generate Access Token -->
 function genarateAccessToken(payload) {
   return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: '15m',
+    expiresIn: '1h',
   });
 }
 // <-- Generate Refresh Token -->

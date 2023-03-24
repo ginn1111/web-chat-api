@@ -4,6 +4,8 @@ const router = require('express').Router();
 const User = require('../models/User');
 const CryptoJS = require('crypto-js');
 const { getURLAvatar, getURLCoverPicture } = require('../services/firebase');
+const { createNewConversation } = require('./conversations');
+const { deleteConversationByMembers } = require('../utils/helper');
 
 // [GET 1 USER]
 router.get('/find/:userId', verifyToken, async (req, res) => {
@@ -285,7 +287,22 @@ router.put(
             });
             await updateSenderProcess;
             await updateReceiverProcess;
-            res.status(202).json(receiver._id);
+
+            // Create new conversation
+            const newConversation = await createNewConversation({
+              members: [
+                { memberId: req.params.id, nickname: sender.nickname },
+                {
+                  memberId: qReceiverId,
+                  nickname: receiver.id,
+                },
+              ],
+            });
+
+            res.status(202).json({
+              receiverId: receiver._id,
+              conversation: newConversation,
+            });
             break;
           }
           // In the case add friend request is denied
@@ -351,6 +368,10 @@ router.put(
 
           await updateSenderProcess;
           await updateReceiverProcess;
+
+          // Delete conversation
+          await deleteConversationByMembers([qReceiverId, req.params.id]);
+
           res.status(200).json(receiver._id);
         } else {
           return res.status(403).json('You are not friends to unfriend!');

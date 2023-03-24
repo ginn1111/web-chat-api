@@ -9,23 +9,38 @@ const {
 const { verifyToken, verifyTokenAndAuthorization } = require('./verify');
 
 // [NEW CONVERSATION] --> OK
-router.post('/:id/create', verifyTokenAndAuthorization, async (req, res) => {
+const createNewConversation = async ({
+  isGroup = false,
+  title = "Don't have name!",
+  members,
+}) => {
   // Check if the request query has <group> or not,
   // default is 'false' - private conversation
-  const qCreateGroup = req.query.group || 'false';
   const newConversation = new Conversation({
-    members: [...req.body.members],
-    isGroup: JSON.parse(qCreateGroup),
-    title: req.body.title ?? "Don't have name!",
+    members,
+    isGroup,
+    title,
   });
+  // Save new conversation to db
+  let savedConversation = await newConversation.save();
+  savedConversation = {
+    ...savedConversation._doc,
+    members: members,
+    fromOnline: Date.now(),
+  };
+
+  return savedConversation;
+};
+
+router.post('/:id/create', verifyTokenAndAuthorization, async (req, res) => {
+  const qCreateGroup = req.query.group || 'false';
+  const data = {
+    members: req.body.members,
+    isGroup: JSON.parse(qCreateGroup),
+    title: req.body.title,
+  };
   try {
-    // Save new conversation to db
-    let savedConversation = await newConversation.save();
-    savedConversation = {
-      ...savedConversation._doc,
-      members: req.body.members,
-      fromOnline: Date.now(),
-    };
+    const savedConversation = createNewConversation(data);
     res.status(200).json(savedConversation);
   } catch (error) {
     res.status(500).json(error);
@@ -122,10 +137,12 @@ router.put(`/:conversationId/update-time`, verifyToken, async (req, res) => {
   }
 });
 
+const deleteConversation = (conversationId) =>
+  Conversation.findByIdAndDelete(conversationId);
 // [DELETE CONVERSATION] --> OK
 router.delete('/:conversationId/delete', verifyToken, async (req, res) => {
   try {
-    const deletedConversation = await Conversation.findByIdAndDelete(
+    const deletedConversation = await deleteConversation(
       req.params.conversationId
     );
     res.status(200).json(deletedConversation._id);
@@ -133,5 +150,6 @@ router.delete('/:conversationId/delete', verifyToken, async (req, res) => {
     res.status(500).json(error);
   }
 });
-
+router.createNewConversation = createNewConversation;
+router.deleteConversation = deleteConversation;
 module.exports = router;
