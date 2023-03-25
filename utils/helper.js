@@ -11,14 +11,16 @@ const getLastMsg = async (conversationId) =>
 
 const getLastMsgAndMemberForConversation = async (conversation) => {
   const members = await Promise.all(
-    conversation.members.map(async (mem) => {
-      const avatar = (await User.findById(mem.memberId)).avatar;
-      return { ...mem._doc, avatar };
+    conversation.members.map(async (member) => {
+      const avatar = (await User.findById(member.memberId)).avatar;
+      const { _id, ...rest } = member._doc;
+      return { ...rest, avatar };
     })
   );
   const lastMsg = await getLastMsg(conversation._id);
+  const { __v, _id: id, createdAt, updatedAt, ...rest } = conversation._doc;
   return {
-    ...conversation._doc,
+    ...rest,
     members,
     lastMsg: lastMsg?.[0] ?? {
       text: "Let's chat!",
@@ -31,7 +33,7 @@ const getLastMsgAndMemberForConversation = async (conversation) => {
 const getInformationForGroupConversation = (conversation) =>
   getAvatarMemberConversationList(conversation);
 
-const getInformationForPrivateConversation = async (conversation) => {
+const getInformationForPrivateConversation = async (conversation, userId) => {
   const privateConversation = await getLastMsgAndMemberForConversation(
     conversation
   );

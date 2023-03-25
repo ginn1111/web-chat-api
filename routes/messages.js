@@ -39,7 +39,6 @@ router.get(
 
       res.status(200).json(resMessages);
     } catch (error) {
-      console.log({ error });
       res.status(500).json(error);
     }
   }

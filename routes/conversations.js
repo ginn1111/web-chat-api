@@ -56,7 +56,7 @@ router.get('/:id/get', verifyTokenAndAuthorization, async (req, res) => {
         if (conversation.isGroup) {
           return getInformationForGroupConversation(conversation);
         }
-        return getInformationForPrivateConversation(conversation);
+        return getInformationForPrivateConversation(conversation, userId);
       })
     );
     res.status(200).json(conversations);
@@ -91,7 +91,6 @@ router.put('/:conversationId/add-member/', verifyToken, async (req, res) => {
     );
     res.status(200).json(updatedConversation);
   } catch (error) {
-    console.log(error);
     res.status(500).json(error);
   }
 });

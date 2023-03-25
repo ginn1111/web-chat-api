@@ -54,7 +54,6 @@ router.post('/register', async (req, res) => {
     // in fact, we do not send any information after registering)
     res.status(200).json('Your new account has been created successfully!');
   } catch (error) {
-    console.log({ error });
     res.status(500).json(error);
   }
 });
