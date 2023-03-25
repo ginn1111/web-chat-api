@@ -1,9 +1,8 @@
 const router = require('express').Router();
 const Conversation = require('../models/Conversation');
 const {
-  getAvatarMemberConversationList,
-  getLastMsgAndInforForPrivateConversation,
-  getAvatarMemberForGroupConversation,
+  getInformationForGroupConversation,
+  getInformationForPrivateConversation,
 } = require('../utils/helper');
 
 const { verifyToken, verifyTokenAndAuthorization } = require('./verify');
@@ -49,27 +48,17 @@ router.post('/:id/create', verifyTokenAndAuthorization, async (req, res) => {
 
 // [GET ALL CONVERSATIONS] --> OK
 router.get('/:id/get', verifyTokenAndAuthorization, async (req, res) => {
-  const qIsGroup = JSON.parse(req.query.isGroup);
   const userId = req.params.id;
   try {
-    let conversations;
-    if (qIsGroup) {
-      conversations = await Conversation.find({
-        'members.memberId': userId,
-        isGroup: true,
-      });
-
-      conversations = await getAvatarMemberConversationList(conversations);
-    } else {
-      conversations = await Conversation.find({
-        'members.memberId': userId,
-        isGroup: false,
-      });
-      conversations = await getLastMsgAndInforForPrivateConversation(
-        conversations,
-        userId
-      );
-    }
+    let conversations = await Conversation.find({ 'members.memberId': userId });
+    conversations = await Promise.all(
+      conversations.map((conversation) => {
+        if (conversation.isGroup) {
+          return getInformationForGroupConversation(conversation);
+        }
+        return getInformationForPrivateConversation(conversation);
+      })
+    );
     res.status(200).json(conversations);
   } catch (error) {
     res.status(500).json(error);

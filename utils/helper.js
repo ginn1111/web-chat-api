@@ -9,9 +9,9 @@ const getLastMsg = async (conversationId) =>
     .sort({ _id: -1 })
     .limit(1);
 
-const getAvatarMemberForGroupConversation = async (conversation) => {
+const getLastMsgAndMemberForConversation = async (conversation) => {
   const members = await Promise.all(
-    conversation?.members?.map(async (mem) => {
+    conversation.members.map(async (mem) => {
       const avatar = (await User.findById(mem.memberId)).avatar;
       return { ...mem._doc, avatar };
     })
@@ -28,37 +28,23 @@ const getAvatarMemberForGroupConversation = async (conversation) => {
   };
 };
 
-const getAvatarMemberConversationList = async (conversations) => {
-  return await Promise.all(
-    conversations?.map(async (con) => {
-      const conWithNewMembersAndLastMsg =
-        await getAvatarMemberForGroupConversation(con);
-      return {
-        ...conWithNewMembersAndLastMsg,
-      };
-    })
-  );
-};
-const getLastMsgAndInforForPrivateConversation = async (
-  conversations,
-  userId
-) => {
-  return await Promise.all(
-    conversations.map(async (conversation) => {
-      const conWithNewMembersAndLastMsg =
-        await getAvatarMemberForGroupConversation(conversation);
+const getInformationForGroupConversation = (conversation) =>
+  getAvatarMemberConversationList(conversation);
 
-      const member = conWithNewMembersAndLastMsg.members.find(
-        (mem) => mem.memberId !== userId
-      );
-
-      return {
-        ...conWithNewMembersAndLastMsg,
-        title: member.nickname,
-        avatar: member.avatar,
-      };
-    })
+const getInformationForPrivateConversation = async (conversation) => {
+  const privateConversation = await getLastMsgAndMemberForConversation(
+    conversation
   );
+
+  const member = privateConversation.members.find(
+    (mem) => mem.memberId !== userId
+  );
+
+  return {
+    ...privateConversation,
+    title: member.nickname,
+    avatar: member.avatar,
+  };
 };
 
 const deleteConversationByMembers = async (memberIds) => {
@@ -74,8 +60,7 @@ const deleteConversationByMembers = async (memberIds) => {
 };
 
 module.exports = {
-  getLastMsgAndInforForPrivateConversation,
-  getAvatarMemberConversationList,
-  getAvatarMemberForGroupConversation,
+  getInformationForGroupConversation,
+  getInformationForPrivateConversation,
   deleteConversationByMembers,
 };
