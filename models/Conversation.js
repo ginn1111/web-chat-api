@@ -9,7 +9,7 @@ const ConversationSchema = new mongoose.Schema(
       },
     ],
     isGroup: { type: Boolean, default: false },
-    title: { type: String, default: "Don't have name!" },
+    title: { type: String, default: '' },
     fromOnline: { type: Number, default: Date.now() },
     lastMsg: {
       text: { type: String, default: "Let's chat!" },

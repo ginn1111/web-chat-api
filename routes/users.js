@@ -294,7 +294,7 @@ router.put(
                 { memberId: req.params.id, nickname: sender.nickname },
                 {
                   memberId: qReceiverId,
-                  nickname: receiver.id,
+                  nickname: receiver.nickname,
                 },
               ],
             });

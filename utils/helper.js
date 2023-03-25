@@ -20,6 +20,7 @@ const getLastMsgAndMemberForConversation = async (conversation) => {
   const lastMsg = await getLastMsg(conversation._id);
   const { __v, _id: id, createdAt, updatedAt, ...rest } = conversation._doc;
   return {
+    id,
     ...rest,
     members,
     lastMsg: lastMsg?.[0] ?? {
@@ -30,8 +31,25 @@ const getLastMsgAndMemberForConversation = async (conversation) => {
   };
 };
 
-const getInformationForGroupConversation = (conversation) =>
-  getAvatarMemberConversationList(conversation);
+const getInformationForGroupConversation = async (conversation) => {
+  const groupConversation = await getLastMsgAndMemberForConversation(
+    conversation
+  );
+
+  const avatars = groupConversation.members
+    .slice(0, 3)
+    .map(({ avatar }) => avatar);
+
+  const title = groupConversation.members
+    .map(({ nickname }) => nickname)
+    .join(', ');
+
+  return {
+    ...groupConversation,
+    title,
+    avatars,
+  };
+};
 
 const getInformationForPrivateConversation = async (conversation, userId) => {
   const privateConversation = await getLastMsgAndMemberForConversation(
